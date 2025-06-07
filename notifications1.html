@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background-color: #2563eb;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .mark-read {
+            color: #2563eb;
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .notifications-list {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .notification {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .notification:last-child {
+            border-bottom: none;
+        }
+        
+        .notification.unread {
+            background-color: #f8fafc;
+        }
+        
+        .notification-icon {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .notification-message {
+            color: #64748b;
+            line-height: 1.5;
+        }
+        
+        .notification-time {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .notification-actions {
+            margin-left: 15px;
+        }
+        
+        .notification-actions button {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">EV Dashboard</div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="model-management.html">Models</a>
+            <a href="review-analysis.html">Reviews</a>
+            <a href="market-intelligence.html">Market Intel</a>
+            <a href="index1.html">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Notifications</h1>
+            <button class="mark-read">Mark all as read</button>
+        </div>
+        
+        <div class="notifications-list">
+            <div class="notification unread">
+                <div class="notification-icon">⚠️</div>
+                <div class="notification-content">
+                    <div class="notification-title">New Review Received</div>
+                    <div class="notification-message">
+                        Customer "Rahul Sharma" posted a 4-star review for Ola S1 Air
+                    </div>
+                    <div class="notification-time">10 minutes ago</div>
+                </div>
+                <div class="notification-actions">
+                    <button>×</button>
+                </div>
+            </div>
+            
+            <div class="notification unread">
+                <div class="notification-icon">🔋</div>
+                <div class="notification-content">
+                    <div class="notification-title">Battery Update Available</div>
+                    <div class="notification-message">
+                        New firmware update available for Hero Electric Optima CX batteries
+                    </div>
+                    <div class="notification-time">2 hours ago</div>
+                </div>
+                <div class="notification-actions">
+                    <button>×</button>
+                </div>
+            </div>
+            
+            <div class="notification">
+                <div class="notification-icon">📈</div>
+                <div class="notification-content">
+                    <div class="notification-title">Monthly Sales Report</div>
+                    <div class="notification-message">
+                        Your monthly sales report for June 2023 is ready to view
+                    </div>
+                    <div class="notification-time">1 day ago</div>
+                </div>
+                <div class="notification-actions">
+                    <button>×</button>
+                </div>
+            </div>
+            
+            <div class="notification">
+                <div class="notification-icon">🛠️</div>
+                <div class="notification-content">
+                    <div class="notification-title">Maintenance Alert</div>
+                    <div class="notification-message">
+                        Scheduled maintenance for Bounce Infinity E1 models next week
+                    </div>
+                    <div class="notification-time">3 days ago</div>
+                </div>
+                <div class="notification-actions">
+                    <button>×</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.mark-read').addEventListener('click', function() {
+            document.querySelectorAll('.notification.unread').forEach(notif => {
+                notif.classList.remove('unread');
+            });
+            alert('All notifications marked as read');
+        });
+        
+        document.querySelectorAll('.notification-actions button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.notification').remove();
+            });
+        });
+    </script>
+</body>
+</html>

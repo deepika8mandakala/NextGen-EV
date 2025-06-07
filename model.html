@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Maintenance Cost Tracker</title>
+    <style>
+    :root {
+        --primary-color: #4361ee;
+        --primary-light: #eef2ff;
+        --secondary-color: #3f37c9;
+        --accent-color: #4895ef;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --gray-color: #6c757d;
+        --light-gray: #e9ecef;
+        --success-color: #4cc9f0;
+        --success-light: #e6f7fd;
+        --warning-color: #f8961e;
+        --warning-light: #fef3e6;
+        --danger-color: #f72585;
+        --danger-light: #fde8ef;
+        --border-radius: 12px;
+        --border-radius-sm: 8px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --box-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+    
+    /* Base Styles */
+    body {
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        color: var(--dark-color);
+        margin: 0;
+        padding: 0;
+        background-color: #f9fafd;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    h1, h2, h3, h4 {
+        font-weight: 600;
+        margin: 0 0 1rem;
+        color: var(--dark-color);
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+        margin: 1.5rem 0 1rem;
+    }
+    
+    p {
+        margin: 0 0 1rem;
+    }
+    
+    /* Navigation Bar */
+    .navbar {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--box-shadow);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: 70px;
+    }
+    
+    .navbar-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    
+    .back-btn {
+        color: white;
+        background-color: transparent;
+        border: none;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .back-btn:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Main Content */
+    .main-content {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .input-section, .report-section {
+        background: white;
+        padding: 1.75rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        border: 1px solid var(--light-gray);
+    }
+    
+    .input-section:hover, .report-section:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-lg);
+    }
+    
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--gray-color);
+        font-size: 0.875rem;
+    }
+    
+    input, select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--light-gray);
+        border-radius: var(--border-radius-sm);
+        font-size: 0.9375rem;
+        transition: var(--transition);
+        background-color: white;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.15);
+    }
+    
+    button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    button:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--box-shadow);
+    }
+    
+    /* Results Sections */
+    .chart-container {
+        margin-top: 1.5rem;
+        height: 400px;
+        display: none;
+        background: white;
+        padding: 1rem;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--light-gray);
+    }
+    
+    .summary {
+        margin-top: 1.25rem;
+        padding: 1.25rem;
+        background-color: var(--primary-light);
+        border-radius: var(--border-radius-sm);
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .summary p {
+        margin: 0.5rem 0;
+        font-size: 0.9375rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .positive {
+        color: var(--success-color);
+        font-weight: 600;
+    }
+    
+    .negative {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+    
+    /* Category Inputs */
+    .category-inputs {
+        margin-top: 1.25rem;
+    }
+    
+    .category-row {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        align-items: center;
+    }
+    
+    .category-row select {
+        flex: 2;
+    }
+    
+    .category-row input {
+        flex: 1;
+    }
+    
+    /* Top Categories */
+    .top-categories {
+        margin-top: 1.5rem;
+    }
+    
+    .top-categories ol {
+        padding-left: 1.25rem;
+        margin: 0;
+    }
+    
+    .top-categories li {
+        margin-bottom: 0.625rem;
+        padding: 0.5rem 0;
+        font-size: 0.9375rem;
+        border-bottom: 1px solid var(--light-gray);
+    }
+    
+    .top-categories li:last-child {
+        border-bottom: none;
+    }
+    
+    /* All Expenses List */
+    .all-expenses {
+        margin-top: 1.5rem;
+    }
+    
+    .expense-categories {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .expense-category {
+        background: white;
+        padding: 1rem;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--light-gray);
+    }
+    
+    .expense-category h4 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        color: var(--primary-color);
+    }
+    
+    .expense-category ul {
+        margin: 0;
+        padding-left: 1rem;
+        list-style-type: none;
+    }
+    
+    .expense-category li {
+        padding: 0.25rem 0;
+        font-size: 0.875rem;
+        color: var(--gray-color);
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+        flex-wrap: wrap;
+    }
+    
+    #add-category {
+        background-color: var(--accent-color);
+    }
+    
+    #add-category:hover {
+        background-color: #3a7bc8;
+    }
+    
+    #calculate {
+        background-color: var(--success-color);
+    }
+    
+    #calculate:hover {
+        background-color: #3aa8d8;
+    }
+    
+    #save-data {
+        background-color: var(--warning-color);
+    }
+    
+    #save-data:hover {
+        background-color: #e07e0c;
+    }
+    
+    #refresh-data {
+        background-color: var(--danger-color);
+    }
+    
+    #refresh-data:hover {
+        background-color: #d1145a;
+    }
+    
+    /* Warning Message */
+    .warning-message {
+        background-color: var(--danger-light);
+        color: var(--danger-color);
+        padding: 1rem;
+        border-radius: var(--border-radius-sm);
+        margin-top: 1rem;
+        border-left: 4px solid var(--danger-color);
+        font-weight: 500;
+        display: none;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 900px) {
+        .container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .navbar {
+            padding: 0 1rem;
+            height: auto;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 1rem;
+        }
+        
+        .navbar-title {
+            margin-bottom: 0.75rem;
+        }
+        
+        .main-content {
+            padding: 1rem;
+        }
+        
+        .input-section, .report-section {
+            padding: 1.25rem;
+        }
+        
+        .category-row {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .category-row select, 
+        .category-row input {
+            width: 100%;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        button {
+            width: 100%;
+        }
+    }
+    
+    /* Utility Classes */
+    .hidden {
+        display: none !important;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="navbar-title">Maintenance Tracker</div>
+        <button class="back-btn" id="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Back to Diagnosis
+        </button>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="input-section">
+                <h2>Vehicle Maintenance Costs</h2>
+                
+                <div class="form-group">
+                    <label for="vehicle-price">Vehicle Purchase Price:</label>
+                    <input type="number" id="vehicle-price" placeholder="Enter your vehicle's purchase price">
+                </div>
+                
+                <h3>Add Maintenance Costs</h3>
+                <div class="category-inputs" id="category-inputs">
+                    <div class="category-row">
+                        <select class="category-select">
+                            <option value="Battery check and servicing">Battery check and servicing</option>
+                            <option value="Battery replacement">Battery replacement</option>
+                            <option value="Brake pads replacement">Brake pads replacement</option>
+                            <option value="Tire replacement">Tire replacement</option>
+                            <option value="Motor and controller inspection">Motor and controller inspection</option>
+                            <option value="General servicing">General servicing (cleaning, updates)</option>
+                            <option value="Charger check or replacement">Charger check or replacement</option>
+                            <option value="Other">Other maintenance</option>
+                        </select>
+                        <input type="number" class="category-amount" placeholder="Amount">
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="add-category">Add Another Maintenance</button>
+                    <button id="calculate">Calculate Costs</button>
+                    <button id="save-data" style="display: none;">Save Maintenance</button>
+                    <button id="refresh-data">Clear All Data</button>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <h2>Maintenance Report</h2>
+                
+                <div class="summary">
+                    <p>Vehicle Price: <span id="vehicle-price-display">₹0</span></p>
+                    <p>Total Maintenance Costs: <span id="total-maintenance">₹0</span></p>
+                    <p>Cost Ratio: <span id="cost-ratio">0%</span></p>
+                </div>
+                
+                <div class="warning-message" id="warning-message">
+                    <strong>Warning:</strong> Your maintenance costs have exceeded the vehicle's purchase price. 
+                    Consider selling the vehicle in the second-hand market.
+                </div>
+                
+                <div id="results-section">
+                    <h3>Costs by Maintenance Type</h3>
+                    <div class="chart-container" id="chart-container">
+                        <canvas id="maintenance-chart"></canvas>
+                    </div>
+                    
+                    <div class="top-categories">
+                        <h3>Most Expensive Maintenance</h3>
+                        <div id="top-categories-list">
+                            <!-- Top categories will be displayed here -->
+                        </div>
+                    </div>
+                    
+                    <div class="all-expenses">
+                        <h3>All Saved Maintenance</h3>
+                        <div id="all-expenses-list">
+                            <!-- All expenses will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize variables
+        let maintenanceData = {};
+        let savedMaintenance = {};
+        let vehiclePrice = 0;
+        let maintenanceChart = null;
+        
+        // DOM elements
+        const vehiclePriceInput = document.getElementById('vehicle-price');
+        const categoryInputs = document.getElementById('category-inputs');
+        const addCategoryBtn = document.getElementById('add-category');
+        const calculateBtn = document.getElementById('calculate');
+        const saveBtn = document.getElementById('save-data');
+        const refreshBtn = document.getElementById('refresh-data');
+        const vehiclePriceDisplay = document.getElementById('vehicle-price-display');
+        const totalMaintenanceSpan = document.getElementById('total-maintenance');
+        const costRatioSpan = document.getElementById('cost-ratio');
+        const topCategoriesList = document.getElementById('top-categories-list');
+        const allExpensesList = document.getElementById('all-expenses-list');
+        const chartContainer = document.getElementById('chart-container');
+        const chartCanvas = document.getElementById('maintenance-chart');
+        const resultsSection = document.getElementById('results-section');
+        const warningMessage = document.getElementById('warning-message');
+        const backBtn = document.getElementById('back-btn');
+
+        // Back button event listener
+        backBtn.addEventListener('click', () => {
+            window.location.href = "vehicle-diagnosis.html";
+        });
+
+        // Initially hide results section
+        resultsSection.style.display = 'none';
+        
+        // Event listeners
+        addCategoryBtn.addEventListener('click', addCategoryInput);
+        calculateBtn.addEventListener('click', calculateMaintenance);
+        saveBtn.addEventListener('click', saveMaintenance);
+        refreshBtn.addEventListener('click', clearAllData);
+        vehiclePriceInput.addEventListener('change', updateVehiclePrice);
+        
+        // Load saved data from localStorage
+        loadSavedData();
+
+        function addCategoryInput() {
+            const newRow = document.createElement('div');
+            newRow.className = 'category-row';
+            newRow.innerHTML = `
+                <select class="category-select">
+                    <option value="Battery check and servicing">Battery check and servicing</option>
+                    <option value="Battery replacement">Battery replacement</option>
+                    <option value="Brake pads replacement">Brake pads replacement</option>
+                    <option value="Tire replacement">Tire replacement</option>
+                    <option value="Motor and controller inspection">Motor and controller inspection</option>
+                    <option value="General servicing">General servicing (cleaning, updates)</option>
+                    <option value="Charger check or replacement">Charger check or replacement</option>
+                    <option value="Other">Other maintenance</option>
+                </select>
+                <input type="number" class="category-amount" placeholder="Amount">
+            `;
+            
+            categoryInputs.appendChild(newRow);
+        }
+
+        function updateVehiclePrice() {
+            vehiclePrice = parseFloat(vehiclePriceInput.value) || 0;
+            vehiclePriceDisplay.textContent = `₹${vehiclePrice.toFixed(2)}`;
+            // Save to localStorage
+            localStorage.setItem('vehiclePrice', vehiclePrice);
+        }
+        
+        function calculateMaintenance() {
+            // Clear previous maintenance data
+            maintenanceData = {};
+            
+            const categoryRows = document.querySelectorAll('.category-row');
+            
+            categoryRows.forEach(row => {
+                const category = row.querySelector('.category-select').value;
+                const amount = parseFloat(row.querySelector('.category-amount').value) || 0;
+                
+                if (amount > 0) {
+                    if (!maintenanceData[category]) {
+                        maintenanceData[category] = [];
+                    }
+                    // Add new entry only if amount is valid
+                    maintenanceData[category].push({
+                        amount: amount,
+                        date: new Date().toISOString().split('T')[0],
+                        isNew: true // Mark as new entry
+                    });
+                }
+            });
+            
+            // Show results section
+            resultsSection.style.display = 'block';
+            
+            updateSummary();
+            initializeChart();
+            showTopCategories();
+            
+            // Show save button after calculation
+            saveBtn.style.display = 'block';
+        }
+
+        function saveMaintenance() {
+            // Load existing saved maintenance
+            const savedData = localStorage.getItem('savedMaintenance');
+            if (savedData) {
+                savedMaintenance = JSON.parse(savedData);
+            }
+            
+            // Add current maintenance data to saved maintenance (only new entries)
+            Object.keys(maintenanceData).forEach(category => {
+                if (!savedMaintenance[category]) {
+                    savedMaintenance[category] = [];
+                }
+                
+                // Filter to only include new entries
+                const newEntries = maintenanceData[category].filter(entry => entry.isNew);
+                
+                newEntries.forEach(entry => {
+                    // Remove the isNew flag before saving
+                    const { isNew, ...entryToSave } = entry;
+                    savedMaintenance[category].push(entryToSave);
+                });
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('savedMaintenance', JSON.stringify(savedMaintenance));
+            localStorage.setItem('vehiclePrice', vehiclePrice);
+            
+            // Update the display
+            showAllMaintenance();
+            
+            // Clear current maintenance data after saving
+            maintenanceData = {};
+            
+            // Hide save button until new data is entered
+            saveBtn.style.display = 'none';
+            
+            // Show confirmation
+            alert('Maintenance costs saved successfully!');
+        }
+        
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear ALL saved data? This cannot be undone.')) {
+                // Clear localStorage
+                localStorage.removeItem('savedMaintenance');
+                localStorage.removeItem('vehiclePrice');
+                
+                // Reset variables
+                maintenanceData = {};
+                savedMaintenance = {};
+                vehiclePrice = 0;
+                
+                // Reset UI
+                vehiclePriceInput.value = '';
+                vehiclePriceDisplay.textContent = '₹0';
+                totalMaintenanceSpan.textContent = '₹0';
+                costRatioSpan.textContent = '0%';
+                
+                // Clear category inputs (keep just one)
+                const categoryRows = document.querySelectorAll('.category-row');
+                for (let i = 1; i < categoryRows.length; i++) {
+                    categoryRows[i].remove();
+                }
+                
+                // Reset the first category row
+                const firstRow = document.querySelector('.category-row');
+                firstRow.querySelector('.category-select').value = 'Battery check and servicing';
+                firstRow.querySelector('.category-amount').value = '';
+                
+                // Hide results section
+                resultsSection.style.display = 'none';
+                warningMessage.style.display = 'none';
+                
+                // Hide save button
+                saveBtn.style.display = 'none';
+                
+                // Clear displayed data
+                topCategoriesList.innerHTML = '';
+                allExpensesList.innerHTML = '<p>No saved maintenance yet.</p>';
+                
+                // Destroy chart if it exists
+                if (maintenanceChart) {
+                    maintenanceChart.destroy();
+                    maintenanceChart = null;
+                }
+                
+                // Hide chart container
+                chartContainer.style.display = 'none';
+                
+                alert('All data has been cleared successfully.');
+            }
+        }
+        
+        function updateSummary() {
+            let totalCurrentMaintenance = 0;
+            Object.values(maintenanceData).forEach(category => {
+                category.forEach(entry => {
+                    totalCurrentMaintenance += entry.amount;
+                });
+            });
+            
+            // Calculate total from saved maintenance
+            let totalSavedMaintenance = 0;
+            if (savedMaintenance) {
+                Object.values(savedMaintenance).forEach(category => {
+                    category.forEach(entry => {
+                        totalSavedMaintenance += entry.amount;
+                    });
+                });
+            }
+            
+            const totalMaintenance = totalCurrentMaintenance + totalSavedMaintenance;
+            const costRatio = vehiclePrice > 0 ? (totalMaintenance / vehiclePrice * 100) : 0;
+            
+            totalMaintenanceSpan.textContent = `₹${totalMaintenance.toFixed(2)}`;
+            costRatioSpan.textContent = `${costRatio.toFixed(1)}%`;
+            
+            // Show warning if maintenance exceeds vehicle price
+            if (totalMaintenance > vehiclePrice && vehiclePrice > 0) {
+                warningMessage.style.display = 'block';
+                costRatioSpan.className = 'negative';
+            } else {
+                warningMessage.style.display = 'none';
+                costRatioSpan.className = 'positive';
+            }
+        }
+        
+        function initializeChart() {
+            // Destroy previous chart if it exists
+            if (maintenanceChart) {
+                maintenanceChart.destroy();
+            }
+            
+            // Combine current and saved maintenance
+            const combinedData = JSON.parse(JSON.stringify(savedMaintenance || {}));
+            
+            // Add current maintenance to the combined data
+            Object.keys(maintenanceData).forEach(category => {
+                if (!combinedData[category]) {
+                    combinedData[category] = [];
+                }
+                // Only include the actual data (without isNew flag)
+                const currentData = maintenanceData[category].map(({ isNew, ...rest }) => rest);
+                combinedData[category] = combinedData[category].concat(currentData);
+            });
+            
+            // Prepare chart data
+            const categories = Object.keys(combinedData);
+            const amounts = categories.map(category => {
+                return combinedData[category].reduce((sum, entry) => sum + entry.amount, 0);
+            });
+            
+            // Sort by amount (descending)
+            const sortedIndices = [...Array(categories.length).keys()]
+                .sort((a, b) => amounts[b] - amounts[a]);
+            
+            const sortedCategories = sortedIndices.map(i => categories[i]);
+            const sortedAmounts = sortedIndices.map(i => amounts[i]);
+            
+            const ctx = chartCanvas.getContext('2d');
+            maintenanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedCategories,
+                    datasets: [{
+                        label: 'Maintenance Cost (₹)',
+                        data: sortedAmounts,
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+                            '#9966FF', '#FF9F40', '#8AC24A', '#F06292',
+                            '#7986CB', '#A1887F'
+                        ],
+                        borderColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+                            '#9966FF', '#FF9F40', '#8AC24A', '#F06292',
+                            '#7986CB', '#A1887F'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost (₹)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Maintenance Types'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Maintenance Costs by Type'
+                        }
+                    }
+                }
+            });
+            
+            // Show the chart container
+            chartContainer.style.display = 'block';
+        }
+        
+        function showTopCategories() {
+            // Combine current and saved maintenance
+            const combinedData = JSON.parse(JSON.stringify(savedMaintenance || {}));
+            
+            // Add current maintenance to the combined data
+            Object.keys(maintenanceData).forEach(category => {
+                if (!combinedData[category]) {
+                    combinedData[category] = [];
+                }
+                // Only include the actual data (without isNew flag)
+                const currentData = maintenanceData[category].map(({ isNew, ...rest }) => rest);
+                combinedData[category] = combinedData[category].concat(currentData);
+            });
+            
+            // Prepare data for display
+            const categories = Object.keys(combinedData).map(category => {
+                return {
+                    name: category,
+                    total: combinedData[category].reduce((sum, entry) => sum + entry.amount, 0)
+                };
+            });
+            
+            // Sort by total (descending)
+            categories.sort((a, b) => b.total - a.total);
+            
+            let html = '';
+            if (categories.length > 0) {
+                html += '<ol>';
+                categories.forEach(category => {
+                    const percentage = vehiclePrice > 0 ? 
+                        (category.total / vehiclePrice * 100).toFixed(1) : '0';
+                    html += `<li><strong>${category.name}:</strong> ₹${category.total.toFixed(2)} (${percentage}% of vehicle price)</li>`;
+                });
+                html += '</ol>';
+            } else {
+                html = '<p>No maintenance data entered yet.</p>';
+            }
+            
+            topCategoriesList.innerHTML = html;
+        }
+        
+        function showAllMaintenance() {
+            let html = '';
+            
+            if (Object.keys(savedMaintenance).length === 0) {
+                html = '<p>No saved maintenance yet.</p>';
+            } else {
+                html += '<div class="expense-categories">';
+                
+                Object.keys(savedMaintenance).forEach(category => {
+                    const total = savedMaintenance[category].reduce((sum, entry) => sum + entry.amount, 0);
+                    
+                    html += `<div class="expense-category">
+                        <h4>${category} - Total: ₹${total.toFixed(2)}</h4>
+                        <ul>`;
+                    
+                    savedMaintenance[category].forEach(entry => {
+                        html += `<li>₹${entry.amount.toFixed(2)} on ${entry.date}</li>`;
+                    });
+                    
+                    html += `</ul></div>`;
+                });
+                
+                html += '</div>';
+            }
+            
+            allExpensesList.innerHTML = html;
+        }
+
+        function loadSavedData() {
+            // Load saved maintenance
+            const savedMaintenanceData = localStorage.getItem('savedMaintenance');
+            if (savedMaintenanceData) {
+                savedMaintenance = JSON.parse(savedMaintenanceData);
+                showAllMaintenance();
+            }
+            
+            // Load vehicle price
+            const savedVehiclePrice = localStorage.getItem('vehiclePrice');
+            if (savedVehiclePrice) {
+                vehiclePriceInput.value = savedVehiclePrice;
+                vehiclePrice = parseFloat(savedVehiclePrice);
+                vehiclePriceDisplay.textContent = `₹${vehiclePrice.toFixed(2)}`;
+            }
+        }
+    </script>
+</body>
+</html>

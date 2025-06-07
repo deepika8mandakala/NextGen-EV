@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Diagnosis - EV Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Reset default margins and padding */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color:  #3a86ff;
+            color: white;
+            height: 90px;
+        }
+        
+        .logo img {
+            height: 100px;
+            width: 100px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #4CAF50;
+        }
+        
+        /* Diagnosis Container */
+        .diagnosis-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .diagnosis-container h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+        
+        /* Diagnosis Grid */
+        .diagnosis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .diagnosis-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .diagnosis-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .diagnosis-card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .diagnosis-card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+        
+        /* Back Button */
+        .back-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #1a252f;
+        }
+        .brand-name {
+            font-size: 1.rem;
+            font-weight: bold;
+            color: white;
+            margin-left: 0%; /* Small margin between logo and text */
+        }
+        .logo-brand {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Reduced gap between logo and text */
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-brand">
+            <div class="logo">
+                <img src="biker.png" alt="EV Connect Logo">
+                  
+            </div>
+             <div class="brand-name"><b>NEXTGEN-EV</b></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="user-dashboard.html">Dashboard</a></li>
+            <li><a href="#about">About Us</a></li>
+        </ul>
+    </nav>
+
+    <div class="diagnosis-container">
+        <h1>Vehicle Diagnosis</h1>
+        <p class="subtitle">Select a diagnostic option below</p>
+        
+        <div class="diagnosis-grid">
+            <!-- Model Validation (Local) -->
+            <div class="diagnosis-card" onclick="location.href='model.html'">
+                <div class="card-icon">🔍</div>
+                <h2>Model Validation Tool</h2>
+                <p>Validate your vehicle model using local diagnostic tools</p>
+            </div>
+            
+            <!-- Performance Analysis -->
+            <div class="diagnosis-card" onclick="location.href='kk.html'">
+                <div class="card-icon">📊</div>
+                <h2>Performance Analysis</h2>
+                <p>Analyze your vehicle's performance metrics and statistics</p>
+            </div>
+            
+            <!-- Battery Health Check -->
+            <div class="diagnosis-card" onclick="location.href='smartalerts.html'">
+                <div class="card-icon"></div>
+                <h2>Smart Alert System</h2>
+                <p>Comprehensive analysis of your EV battery condition</p>
+            </div>
+            
+            <!-- System Diagnostics -->
+            <div class="diagnosis-card" onclick="location.href='pp.html'">
+                <div class="card-icon">⚙️</div>
+                <h2>Spec Matching Tool</h2>
+                <p>Full system scan and component health check</p>
+            </div>
+        </div>
+        
+        <a href="user-dashboard.html" class="back-button">Back to Dashboard</a>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Dashboard | Market Intelligence</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --action: #1a73e8;
+            --secondary: #333333;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --border: #dee2e6;
+        }
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+       
+        body {
+            background-color: var(--light);
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+       
+        .navbar {
+            background-color: #2563eb;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+       
+        .logo {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+        }
+       
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+       
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+       
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+       
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+       
+        .page-header {
+            margin-bottom: 30px;
+        }
+       
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+       
+        .comparison-tool {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+       
+        .comparison-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+       
+        .option-btn {
+            background: none;
+            border: 1px solid var(--action);
+            color: var(--action);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+       
+        .option-btn.active {
+            background-color: var(--action);
+            color: white;
+        }
+       
+        .bike-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+       
+        .bike-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+       
+        .bike-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+       
+        .bike-brand {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+       
+        .bike-model {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+       
+        .bike-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+       
+        .bike-price-label {
+            font-size: 12px;
+            color: #666;
+        }
+       
+        .btn {
+            display: inline-block;
+            background-color: var(--action);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+       
+        .btn:hover {
+            background-color: #0d5bcc;
+            transform: translateY(-2px);
+        }
+       
+        .spec-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+       
+        .spec-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--secondary);
+        }
+       
+        .spec-tab.active {
+            border-bottom: 3px solid var(--action);
+            color: var(--action);
+            font-weight: 600;
+        }
+       
+        .search-spec {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border-color: var(--action);
+        }
+       
+        .market-intelligence {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+       
+        .category-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+       
+        .category-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--secondary);
+        }
+       
+        .category-tab.active {
+            border-bottom: 3px solid var(--action);
+            color: var(--action);
+            font-weight: 600;
+        }
+       
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+       
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+       
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+       
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+       
+        .highlight {
+            background-color: #f0f7ff;
+        }
+       
+        .top-pick {
+            display: inline-block;
+            background-color: var(--action);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+       
+        .recommendation {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid var(--action);
+        }
+       
+        .recommendation h3 {
+            color: var(--action);
+        }
+       
+        .recommendation ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+       
+        .select-dropdown {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--action);
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 8px;
+            color: var(--secondary);
+        }
+       
+        @media (max-width: 768px) {
+            .bike-cards {
+                grid-template-columns: 1fr;
+            }
+           
+            .spec-tabs, .category-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">EV Dashboard</div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="model-management.html">Models</a>
+            <a href="review-analysis.html">Reviews</a>
+            <a href="notifications1.html">Notifications</a>
+            <a href="index.html">Logout</a>
+        </div>
+    </nav>
+   
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Bike Comparison Tool</h1>
+        </div>
+       
+        <div class="comparison-tool">
+            <h2>Compare Bikes</h2>
+           
+            <div class="comparison-options">
+                <button class="option-btn active">Hide common features</button>
+                <button class="option-btn">Highlight differences</button>
+            </div>
+           
+            <div class="bike-cards">
+                <div class="bike-card">
+                    <div class="bike-brand">Bajaj</div>
+                    <div class="bike-model">Pulsar N160</div>
+                    <div class="bike-feature">Single Channel ABS</div>
+                    <div class="bike-price">₹1,22,966</div>
+                    <div class="bike-price-label">Avg. Ex-Showroom price</div>
+                    <a href="#" class="btn">Get Offers</a>
+                </div>
+               
+                <div class="bike-card">
+                    <div class="bike-brand">Bajaj</div>
+                    <div class="bike-model">Pulsar NS160</div>
+                    <div class="bike-feature">Single Channel ABS</div>
+                    <div class="bike-price">₹1,24,771</div>
+                    <div class="bike-price-label">Avg. Ex-Showroom price</div>
+                    <a href="#" class="btn">Get Offers</a>
+                </div>
+               
+                <div class="bike-card">
+                    <div class="bike-brand">Hero</div>
+                    <div class="bike-model">Xtreme 160R 4V</div>
+                    <div class="bike-feature">Double Disc</div>
+                    <div class="bike-price">₹1,28,375</div>
+                    <div class="bike-price-label">Avg. Ex-Showroom price</div>
+                    <a href="#" class="btn">Know More</a>
+                </div>
+               
+                <div class="bike-card" style="display: flex; flex-direction: column; justify-content: center;">
+                    <div style="margin-bottom: 15px;">Select Bike</div>
+                    <select class="select-dropdown">
+                        <option>Choose a bike to compare</option>
+                        <option>Honda Activa 125</option>
+                        <option>TVS Jupiter</option>
+                        <option>Hero Pleasure+</option>
+                    </select>
+                    <a href="#" class="btn" style="margin-top: 15px;">+ Add Bike</a>
+                </div>
+            </div>
+           
+            <div class="spec-tabs">
+                <div class="spec-tab active">SPECIFICATIONS</div>
+                <div class="spec-tab">FEATURES</div>
+                <div class="spec-tab">COLOURS</div>
+                <div class="spec-tab">USER REVIEWS</div>
+                <div class="spec-tab">IMAGES</div>
+                <div class="spec-tab">VIDEOS</div>
+            </div>
+           
+            <input type="text" class="search-spec" placeholder="Type a spec or a feature e.g. Tyre Type">
+        </div>
+       
+        <div class="market-intelligence">
+            <h2>Market Intelligence</h2>
+           
+            <div class="category-tabs">
+                <div class="category-tab active">1. Commuting Scooters</div>
+                <div class="category-tab">2. Delivery & Cargo Scooters</div>
+                <div class="category-tab">3. Off-Road/Performance</div>
+            </div>
+           
+            <div class="tab-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Price (₹)</th>
+                            <th>Range (km)</th>
+                            <th>Top Speed (km/h)</th>
+                            <th>Battery</th>
+                            <th>Motor</th>
+                            <th>Charging Time</th>
+                            <th>Weight Capacity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight">
+                            <td>Hero Electric Optima CX <span class="top-pick">Budget Pick</span></td>
+                            <td>75,000</td>
+                            <td>80</td>
+                            <td>25</td>
+                            <td>48V 30Ah Lithium</td>
+                            <td>250W Hub</td>
+                            <td>4-5 hours</td>
+                            <td>150 kg</td>
+                        </tr>
+                        <tr>
+                            <td>Bounce Infinity E1</td>
+                            <td>85,000</td>
+                            <td>85</td>
+                            <td>65</td>
+                            <td>2 kWh Lithium</td>
+                            <td>1.5 kW Peak</td>
+                            <td>4 hours</td>
+                            <td>160 kg</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td>Ola S1 Air <span class="top-pick">Top Pick</span></td>
+                            <td>1,10,000</td>
+                            <td>120</td>
+                            <td>85</td>
+                            <td>3 kWh Lithium</td>
+                            <td>4.5 kW Peak</td>
+                            <td>6 hours</td>
+                            <td>180 kg</td>
+                        </tr>
+                        <tr>
+                            <td>Revolt RV 400</td>
+                            <td>1,50,000</td>
+                            <td>150</td>
+                            <td>85</td>
+                            <td>3.24 kWh Lithium</td>
+                            <td>3 kW Mid-drive</td>
+                            <td>4.5 hours</td>
+                            <td>180 kg</td>
+                        </tr>
+                    </tbody>
+                </table>
+               
+                <div class="recommendation">
+                    <h3>Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Price Range:</strong> Budget (₹75K–₹1L), Mid-Range (₹1L–₹1.5L), Premium (₹1.5L+)</li>
+                        <li><strong>Range:</strong> Revolt RV 400 and Euler HiLoad lead (150 km)</li>
+                        <li><strong>Speed:</strong> Kabira KM3000 (100 km/h) > Ola S1 Air (85 km/h)</li>
+                    </ul>
+                   
+                    <h3 style="margin-top: 20px;">Recommendation</h3>
+                    <ul>
+                        <li><strong>Daily Commute:</strong> Ola S1 Air (balance of range & speed)</li>
+                        <li><strong>Business/Delivery:</strong> Euler HiLoad Cargo</li>
+                        <li><strong>Thrill Seekers:</strong> Kabira KM3000</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <script>
+        // Tab switching functionality
+        const specTabs = document.querySelectorAll('.spec-tab');
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        const optionBtns = document.querySelectorAll('.option-btn');
+       
+        // Handle specification tabs
+        specTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                specTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Here you would load the appropriate content
+            });
+        });
+       
+        // Handle category tabs
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Here you would load the appropriate table data
+            });
+        });
+       
+        // Handle comparison options
+        optionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                optionBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+               
+                if(btn.textContent.includes('differences')) {
+                    // Code to highlight differences
+                    document.querySelectorAll('tr').forEach(row => {
+                        if(row.classList.contains('highlight')) {
+                            row.style.backgroundColor = '#e6f2ff';
+                        }
+                    });
+                } else {
+                    // Code to hide common features
+                    document.querySelectorAll('tr').forEach(row => {
+                        row.style.backgroundColor = '';
+                    });
+                }
+            });
+        });
+       
+        // Search functionality
+        const searchInput = document.querySelector('.search-spec');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            // Implement search/filter functionality
+            console.log('Searching for:', searchTerm);
+        });
+    </script>
+</body>
+</html>

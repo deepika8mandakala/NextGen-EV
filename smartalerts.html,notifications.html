@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChargeHub - E-Bike Alerts Dashboard</title>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --danger: #ff3a3a;
+            --warning: #ffaa3a;
+            --success: #3aff8f;
+            --info: #3acbff;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+        
+        .header-content h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .view-toggle {
+            display: flex;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 30px;
+            padding: 5px;
+        }
+        
+        .view-btn {
+            padding: 8px 15px;
+            border: none;
+            background: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .view-btn.active {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Customer View Styles */
+        .customer-view {
+            display: none;
+        }
+        
+        .customer-view.active {
+            display: block;
+        }
+        
+        .vehicle-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .vehicle-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .vehicle-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .vehicle-details h3 {
+            margin-bottom: 5px;
+        }
+        
+        .vehicle-details p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .battery-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: auto;
+            align-items: center;
+        }
+        
+        .battery-level {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .battery-visual {
+            width: 100px;
+            height: 20px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+            position: relative;
+        }
+        
+        .battery-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 72%;
+            background-color: var(--primary);
+            border-radius: 10px;
+        }
+        
+        .battery-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Admin View Styles */
+        .admin-view {
+            display: none;
+        }
+        
+        .admin-view.active {
+            display: block;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Shared Alert Styles */
+        .alert-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            animation: fadeIn 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+            background-color: white;
+        }
+        
+        .alert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+        }
+        
+        .alert-danger {
+            border-left: 5px solid var(--danger);
+        }
+        
+        .alert-warning {
+            border-left: 5px solid var(--warning);
+        }
+        
+        .alert-success {
+            border-left: 5px solid var(--success);
+        }
+        
+        .alert-info {
+            border-left: 5px solid var(--info);
+        }
+        
+        .alert-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .danger-icon {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .warning-icon {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .success-icon {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .info-icon {
+            background-color: var(--info);
+            color: white;
+        }
+        
+        .alert-text h3 {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .alert-text p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .alert-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .alert-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 15px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--dark);
+            color: var(--dark);
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+        
+        .close-btn:hover {
+            opacity: 1;
+        }
+        
+        /* Admin-specific elements */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .search-bar {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            padding-left: 45px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .customer-badge {
+            background-color: #f0f7ff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Password Modal */
+        .password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .password-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .password-box h3 {
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .password-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .password-box button {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 0 5px;
+        }
+        
+        .password-box button.cancel {
+            background-color: #ddd;
+            color: var(--dark);
+        }
+        
+        /* E-Bike Specific Styles */
+        .bike-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .user-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .vehicle-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .battery-info {
+                margin: 10px 0 0;
+            }
+            
+            .alert {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .alert-actions {
+                margin-left: 0;
+                margin-top: 15px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .bike-features {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Smart Alerts System</h1>
+            <p class="tagline">Smart monitoring for your electric bike</p>
+        </div>
+        <div class="user-controls">
+            <div class="view-toggle">
+                <button class="view-btn customer-btn active">My Bike</button>
+                <button class="view-btn admin-btn">Admin View</button>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="profilephoto[1].jpg" alt="User Profile">
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Customer View -->
+        <div class="customer-view active" id="customerView">
+            <div class="vehicle-info">
+                <div class="vehicle-icon">
+                    <img src="bike.png" alt="Electric Bike">
+                </div>
+                <div class="vehicle-details">
+                    <h3>NextGen E-Bike Pro</h3>
+                    <p>2023 • Serial: EBP2023123456</p>
+                </div>
+                <div class="battery-info">
+                    <div class="battery-level">72%</div>
+                    <div class="battery-visual">
+                        <div class="battery-fill"></div>
+                    </div>
+                    <div class="battery-label">Battery Level</div>
+                </div>
+            </div>
+            
+            <div class="bike-features">
+                <div class="feature-card">
+                    <div class="feature-icon">🔋</div>
+                    <div class="feature-label">Range: 45km</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-label">Charge Time: 3h</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-label">Last Charge: 2d ago</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛠️</div>
+                    <div class="feature-label">Health: 92%</div>
+                </div>
+            </div>
+            
+            <h2>Recent Alerts</h2>
+            <div class="alert-container" id="customerAlerts">
+                <!-- Customer alerts will be added here -->
+            </div>
+        </div>
+        
+        <!-- Admin View -->
+        <div class="admin-view" id="adminView">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value">142</div>
+                    <div class="stat-label">Total Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Critical Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">88%</div>
+                    <div class="stat-label">Response Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4.1s</div>
+                    <div class="stat-label">Avg. Response Time</div>
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search alerts by customer, bike, or message...">
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active">All Alerts</button>
+                <button class="filter-btn">Critical</button>
+                <button class="filter-btn">Battery</button>
+                <button class="filter-btn">Charging</button>
+                <button class="filter-btn">Maintenance</button>
+                <button class="filter-btn">Unread</button>
+            </div>
+            
+            <div class="alert-container" id="adminAlerts">
+                <!-- Admin alerts will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-box">
+            <h3>Admin Access Required</h3>
+            <input type="password" id="passwordInput" placeholder="Enter admin password">
+            <button id="submitPassword">Submit</button>
+            <button class="cancel" id="cancelPassword">Cancel</button>
+        </div>
+    </div>
+    
+    <script>
+        // Sample data for e-bike alerts
+        const customerAlerts = [
+            {
+                id: 1,
+                type: 'warning',
+                icon: '🔋',
+                title: 'Battery Health Update',
+                message: 'Your battery health is at 87%. Consider a diagnostic check for optimal performance.',
+                time: 'Today, 10:45 AM',
+                actions: ['Schedule Check', 'Dismiss'],
+                category: 'battery'
+            },
+            {
+                id: 2,
+                type: 'success',
+                icon: '💰',
+                title: 'Charging Complete',
+                message: 'Your e-bike has reached the target charge level of 80%. Estimated range: 45km.',
+                time: 'Yesterday, 8:30 PM',
+                actions: ['View Details', 'Share'],
+                category: 'charging'
+            },
+            {
+                id: 3,
+                type: 'danger',
+                icon: '⚠️',
+                title: 'Low Tire Pressure',
+                message: 'Rear tire pressure is at 28psi. Recommended pressure: 40-65psi.',
+                time: 'Jul 15, 7:15 AM',
+                actions: ['Find Service', 'Dismiss'],
+                category: 'maintenance'
+            },
+            {
+                id: 4,
+                type: 'info',
+                icon: '🔄',
+                title: 'Software Update Available',
+                message: 'Version 2023.12.5 improves battery management and adds new features.',
+                time: 'Jul 14, 2:20 PM',
+                actions: ['Install Now', 'Remind Later'],
+                category: 'update'
+            }
+        ];
+        
+        const adminAlerts = [
+            {
+                id: 101,
+                type: 'danger',
+                icon: '🔋',
+                title: 'Battery Overheating',
+                message: 'E-Bike Pro battery temperature reached 48°C. Customer advised to let it cool down.',
+                time: 'Today, 11:30 AM',
+                customer: 'Alex Johnson',
+                vehicle: 'NextGen E-Bike Pro (2023)',
+                battery: '32%',
+                status: 'unread',
+                category: 'battery'
+            },
+            {
+                id: 102,
+                type: 'warning',
+                icon: '⚡',
+                title: 'Charging Interrupted',
+                message: 'Charging session at Station #12 interrupted after 45 minutes. Possible connection issue.',
+                time: 'Today, 10:15 AM',
+                customer: 'Sam Wilson',
+                vehicle: 'Urban E-Bike (2022)',
+                battery: '45%',
+                status: 'read',
+                category: 'charging'
+            },
+            {
+                id: 103,
+                type: 'success',
+                icon: '💰',
+                title: 'Monthly Savings',
+                message: 'Customer saved $38 this month compared to public transport.',
+                time: 'Yesterday, 9:00 PM',
+                customer: 'Jordan Chen',
+                vehicle: 'Mountain E-Bike (2023)',
+                battery: '89%',
+                status: 'read',
+                category: 'savings'
+            },
+            {
+                id: 104,
+                type: 'info',
+                icon: '🔄',
+                title: 'Update Installed',
+                message: 'Customer successfully installed software update v2.3.',
+                time: 'Yesterday, 5:45 PM',
+                customer: 'Taylor Smith',
+                vehicle: 'City E-Bike (2023)',
+                battery: '67%',
+                status: 'read',
+                category: 'update'
+            }
+        ];
+        
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const customerView = document.getElementById('customerView');
+            const adminView = document.getElementById('adminView');
+            const customerAlertsContainer = document.getElementById('customerAlerts');
+            const adminAlertsContainer = document.getElementById('adminAlerts');
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitPassword = document.getElementById('submitPassword');
+            const cancelPassword = document.getElementById('cancelPassword');
+            
+            // View toggle functionality
+            document.querySelector('.customer-btn').addEventListener('click', function() {
+                customerView.classList.add('active');
+                adminView.classList.remove('active');
+                document.querySelector('.customer-btn').classList.add('active');
+                document.querySelector('.admin-btn').classList.remove('active');
+            });
+            
+            document.querySelector('.admin-btn').addEventListener('click', function() {
+                passwordModal.style.display = 'flex';
+                passwordInput.focus();
+            });
+            
+            // Password submit (password: nextgen@2025)
+            submitPassword.addEventListener('click', function() {
+                if (passwordInput.value === 'nextgen@2025') {
+                    passwordModal.style.display = 'none';
+                    adminView.classList.add('active');
+                    customerView.classList.remove('active');
+                    document.querySelector('.admin-btn').classList.add('active');
+                    document.querySelector('.customer-btn').classList.remove('active');
+                    passwordInput.value = '';
+                } else {
+                    alert('Incorrect password. Please try again.');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+            
+            // Also allow Enter key to submit password
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitPassword.click();
+                }
+            });
+            
+            // Cancel password
+            cancelPassword.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+                passwordInput.value = '';
+            });
+            
+            // Close modal when clicking outside
+            passwordModal.addEventListener('click', function(e) {
+                if (e.target === passwordModal) {
+                    passwordModal.style.display = 'none';
+                    passwordInput.value = '';
+                }
+            });
+            
+            // Render customer alerts
+            customerAlerts.forEach(alert => {
+                renderCustomerAlert(alert, customerAlertsContainer);
+            });
+            
+            // Render admin alerts
+            adminAlerts.forEach(alert => {
+                renderAdminAlert(alert, adminAlertsContainer);
+            });
+            
+            // Filter buttons functionality (admin view)
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.textContent.toLowerCase();
+                    let filteredAlerts = adminAlerts;
+                    
+                    if (filter !== 'all alerts') {
+                        if (filter === 'critical') {
+                            filteredAlerts = adminAlerts.filter(a => a.type === 'danger');
+                        } else if (filter === 'unread') {
+                            filteredAlerts = adminAlerts.filter(a => a.status === 'unread');
+                        } else {
+                            filteredAlerts = adminAlerts.filter(a => a.category === filter);
+                        }
+                    }
+                    
+                    adminAlertsContainer.innerHTML = '';
+                    filteredAlerts.forEach(alert => {
+                        renderAdminAlert(alert, adminAlertsContainer);
+                    });
+                });
+            });
+            
+            // Search functionality (admin view)
+            document.querySelector('.search-bar input').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredAlerts = adminAlerts.filter(alert => 
+                    alert.customer.toLowerCase().includes(searchTerm) ||
+                    alert.vehicle.toLowerCase().includes(searchTerm) ||
+                    alert.message.toLowerCase().includes(searchTerm) ||
+                    alert.title.toLowerCase().includes(searchTerm)
+                );
+                
+                adminAlertsContainer.innerHTML = '';
+                filteredAlerts.forEach(alert => {
+                    renderAdminAlert(alert, adminAlertsContainer);
+                });
+            });
+        });
+        
+        function renderCustomerAlert(alert, container) {
+            const typeClasses = {
+                'danger': 'alert-danger',
+                'warning': 'alert-warning',
+                'success': 'alert-success',
+                'info': 'alert-info'
+            };
+            
+            const iconClasses = {
+                'danger': 'danger-icon',
+                'warning': 'warning-icon',
+                'success': 'success-icon',
+                'info': 'info-icon'
+            };
+            
+            const alertEl = document.createElement('div');
+            alertEl.className = `alert ${typeClasses[alert.type]}`;
+            
+            let actionsHTML = '';
+            if (alert.actions && alert.actions.length > 0) {
+                actionsHTML = alert.actions.map(action => 
+                    `<button class="btn ${action === 'Dismiss' ? 'btn-outline' : 'btn-primary'}">${action}</button>`
+                ).join('');
+            }
+            
+            alertEl.innerHTML = `
+                <div class="alert-content">
+                    <div class="alert-icon ${iconClasses[alert.type]}">${alert.icon}</div>
+                    <div class="alert-text">
+                        <h3>${alert.title}</h3>
+                        <p>${alert.message}</p>
+                        <div class="alert-meta">${alert.time}</div>
+                    </div>
+                </div>
+                <div class="alert-actions">
+                    ${actionsHTML}
+                    <button class="close-btn">&times;</button>
+                </div>
+            `;
+            
+            // Add event listeners
+            alertEl.querySelector('.close-btn').addEventListener('click', function() {
+                alertEl.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    alertEl.remove();
+                }, 300);
+            });
+            
+            alertEl.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert(`Action: ${this.textContent} for alert "${alert.title}"`);
+                });
+            });
+            
+            container.appendChild(alertEl);
+        }
+        
+        function renderAdminAlert(alert, container) {
+            const typeClasses = {
+                'danger': 'alert-danger',
+                'warning': 'alert-warning',
+                'success': 'alert-success',
+                'info': 'alert-info'
+            };
+            
+            const iconClasses = {
+                'danger': 'danger-icon',
+                'warning': 'warning-icon',
+                'success': 'success-icon',
+                'info': 'info-icon'
+            };
+            
+            const alertEl = document.createElement('div');
+            alertEl.className = `alert ${typeClasses[alert.type]}`;
+            
+            if (alert.status === 'unread') {
+                alertEl.style.boxShadow = '0 0 0 2px var(--primary)';
+            }
+            
+            alertEl.innerHTML = `
+                <div class="alert-content">
+                    <div class="alert-icon ${iconClasses[alert.type]}">${alert.icon}</div>
+                    <div class="alert-text">
+                        <h3>${alert.title} <span class="customer-badge">👤 ${alert.customer}</span></h3>
+                        <p>${alert.message}</p>
+                        <div class="alert-meta">
+                            <span>${alert.vehicle}</span>
+                            <span>•</span>
+                            <span>${alert.battery} battery</span>
+                            <span>•</span>
+                            <span>${alert.time}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert-actions">
+                    <button class="btn btn-primary">Details</button>
+                    <button class="btn btn-outline">Contact</button>
+                    <button class="close-btn">&times;</button>
+                </div>
+            `;
+            
+            // Add event listeners
+            alertEl.querySelector('.close-btn').addEventListener('click', function() {
+                alertEl.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    alertEl.remove();
+                }, 300);
+            });
+            
+            alertEl.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent;
+                    if (action === 'Contact') {
+                        alert(`Contacting ${alert.customer} about: ${alert.title}`);
+                    } else {
+                        alert(`Showing details for alert: ${alert.title}`);
+                    }
+                });
+            });
+            
+            container.appendChild(alertEl);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spec Matching Tool - EV Connect</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            background-color: #2c3e50;
+            padding: 15px 0;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+        
+        .filter-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        
+        .filter-group h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .budget-options, .purpose-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .budget-option, .purpose-option {
+            padding: 12px 20px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .budget-option:hover, .purpose-option:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .budget-option.active, .purpose-option.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .filter-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 0;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .results-section {
+            display: none;
+        }
+        
+        .bike-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .bike-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .bike-price {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .bike-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .spec-item {
+            margin-bottom: 10px;
+        }
+        
+        .spec-label {
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color:#1A73E8;
+            color: white;
+            height: 40px; /* Fixed height for navbar */
+        }
+        .logo-brand {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Reduced gap between logo and text */
+        }
+        
+        .logo img {
+            height: 90px; /* Adjusted logo size */
+            width: 90px; /* Made logo smaller */
+        }
+        .brand-name {
+            font-size: 1.rem;
+            font-weight: bold;
+            color: white;
+            margin-left: 0%; /* Small margin between logo and text */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-brand">
+            <div class="logo">
+                <img src="biker.png" alt="EV Connect Logo">
+                  
+            </div>
+             <div><b>NEXTGEN-EV</b></div>
+        </div>  
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="user-dashboard.html">Dashboard</a></li>
+            <li><a href="#about">About Us</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Spec Matching Tool</h1>
+        
+        <div class="filter-section">
+            <div class="filter-group">
+                <h3>Select Your Budget (Optional)</h3>
+                <div class="budget-options">
+                    <div class="budget-option" data-value="50000">₹50,000</div>
+                    <div class="budget-option" data-value="100000">₹1,00,000</div>
+                    <div class="budget-option" data-value="150000">₹1,50,000</div>
+                    <div class="budget-option" data-value="200000">₹2,00,000</div>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h3>Select Your Purpose (Optional)</h3>
+                <div class="purpose-options">
+                    <div class="purpose-option" data-value="commuting">Personal/Urban Commuting</div>
+                    <div class="purpose-option" data-value="delivery">Delivery & Logistics</div>
+                    <div class="purpose-option" data-value="cargo">Cargo & Heavy Load Transport</div>
+                    <div class="purpose-option" data-value="offroad">Off-Road & Adventure</div>
+                </div>
+            </div>
+            
+            <button class="filter-btn" id="filterBtn">Show All Bikes</button>
+        </div>
+        
+        <div class="results-section" id="resultsSection">
+            <h2>Available E-Bikes</h2>
+            <div id="bikeResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Bike database
+        const bikeDatabase = [
+            {
+                name: "Hero Electric Optima CX",
+                price: "₹75,000",
+                priceValue: 75000,
+                purpose: "commuting",
+                specs: {
+                    "Range": "80 km/charge",
+                    "Top Speed": "25 km/h",
+                    "Battery": "48V 30Ah Lithium",
+                    "Motor": "250W Hub Motor",
+                    "Charging Time": "4-5 hours",
+                    "Weight Capacity": "150 kg"
+                }
+            },
+            {
+                name: "Ola S1 Air",
+                price: "₹1,10,000",
+                priceValue: 110000,
+                purpose: "commuting",
+                specs: {
+                    "Range": "120 km/charge",
+                    "Top Speed": "85 km/h",
+                    "Battery": "3 kWh Lithium",
+                    "Motor": "4.5 kW Peak",
+                    "Charging Time": "6 hours",
+                    "Weight Capacity": "180 kg"
+                }
+            },
+            {
+                name: "Bounce Infinity E1",
+                price: "₹85,000",
+                priceValue: 85000,
+                purpose: "commuting",
+                specs: {
+                    "Range": "85 km/charge",
+                    "Top Speed": "65 km/h",
+                    "Battery": "2 kWh Lithium",
+                    "Motor": "1.5 kW Peak",
+                    "Charging Time": "4 hours",
+                    "Weight Capacity": "160 kg"
+                }
+            },
+            {
+                name: "Techo Electra Emerge",
+                price: "₹1,25,000",
+                priceValue: 125000,
+                purpose: "delivery",
+                specs: {
+                    "Range": "100 km/charge",
+                    "Top Speed": "60 km/h",
+                    "Battery": "60V 30Ah Lithium",
+                    "Motor": "1000W BLDC",
+                    "Charging Time": "5-6 hours",
+                    "Weight Capacity": "200 kg",
+                    "Cargo Capacity": "Large rear rack included"
+                }
+            },
+            {
+                name: "Euler HiLoad Cargo",
+                price: "₹1,80,000",
+                priceValue: 180000,
+                purpose: "cargo",
+                specs: {
+                    "Range": "150 km/charge",
+                    "Top Speed": "50 km/h",
+                    "Battery": "72V 50Ah Lithium",
+                    "Motor": "3000W BLDC",
+                    "Charging Time": "8 hours",
+                    "Weight Capacity": "300 kg",
+                    "Cargo Capacity": "200L cargo box"
+                }
+            },
+            {
+                name: "Revolt RV 400",
+                price: "₹1,50,000",
+                priceValue: 150000,
+                purpose: "commuting",
+                specs: {
+                    "Range": "150 km/charge",
+                    "Top Speed": "85 km/h",
+                    "Battery": "3.24 kWh Lithium",
+                    "Motor": "3 kW Mid-drive",
+                    "Charging Time": "4.5 hours",
+                    "Weight Capacity": "180 kg"
+                }
+            },
+            {
+                name: "Kabira Mobility KM3000",
+                price: "₹1,90,000",
+                priceValue: 190000,
+                purpose: "offroad",
+                specs: {
+                    "Range": "120 km/charge",
+                    "Top Speed": "100 km/h",
+                    "Battery": "4.2 kWh Lithium",
+                    "Motor": "6 kW Peak",
+                    "Charging Time": "5 hours",
+                    "Weight Capacity": "200 kg",
+                    "Suspension": "Front and rear hydraulic"
+                }
+            }
+        ];
+
+        // DOM elements
+        const budgetOptions = document.querySelectorAll('.budget-option');
+        const purposeOptions = document.querySelectorAll('.purpose-option');
+        const filterBtn = document.getElementById('filterBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        const bikeResults = document.getElementById('bikeResults');
+
+        // Selected filters
+        let selectedBudget = null;
+        let selectedPurpose = null;
+
+        // Event listeners for budget selection
+        budgetOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                budgetOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedBudget = parseInt(option.getAttribute('data-value'));
+            });
+        });
+
+        // Event listeners for purpose selection
+        purposeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                purposeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedPurpose = option.getAttribute('data-value');
+            });
+        });
+
+        // Filter button click handler - now shows all bikes by default
+        filterBtn.addEventListener('click', () => {
+            let filteredBikes = [...bikeDatabase];
+            
+            // Apply filters only if they are selected
+            if (selectedBudget) {
+                filteredBikes = filteredBikes.filter(bike => {
+                    const minBudget = selectedBudget * 0.8;
+                    const maxBudget = selectedBudget * 1.2;
+                    return bike.priceValue >= minBudget && bike.priceValue <= maxBudget;
+                });
+            }
+            
+            if (selectedPurpose) {
+                filteredBikes = filteredBikes.filter(bike => bike.purpose === selectedPurpose);
+            }
+
+            displayResults(filteredBikes);
+        });
+
+        // Display results function
+        function displayResults(bikes) {
+            bikeResults.innerHTML = '';
+            
+            if (bikes.length === 0) {
+                bikeResults.innerHTML = `
+                    <div class="no-results">
+                        <h3>No bikes match your criteria</h3>
+                        <p>Try adjusting your budget or purpose selection</p>
+                    </div>
+                `;
+            } else {
+                bikes.forEach(bike => {
+                    const specsHTML = Object.entries(bike.specs)
+                        .map(([key, value]) => `
+                            <div class="spec-item">
+                                <span class="spec-label">${key}:</span>
+                                <span>${value}</span>
+                            </div>
+                        `)
+                        .join('');
+                    
+                    const bikeCard = `
+                        <div class="bike-card">
+                            <h3 class="bike-title">${bike.name}</h3>
+                            <div class="bike-price">${bike.price}</div>
+                            <div class="bike-specs">
+                                ${specsHTML}
+                            </div>
+                        </div>
+                    `;
+                    
+                    bikeResults.innerHTML += bikeCard;
+                });
+            }
+            
+            resultsSection.style.display = 'block';
+        }
+
+        // Show all bikes when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            displayResults(bikeDatabase);
+            resultsSection.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

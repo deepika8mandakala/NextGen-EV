@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Bike Performance Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --primary: #0d6efd;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        .dark-mode {
+            --bg-color: #212529;
+            --text-color: #f8f9fa;
+            --card-bg: #2c3034;
+            --border-color: #495057;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--card-bg);
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .list-disc {
+            padding-left: 20px;
+            list-style-type: disc;
+        }
+
+        .list-disc li {
+            margin-bottom: 8px;
+        }
+
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-warning {
+            color: var(--warning);
+        }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+           
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>EV Bike Performance & Usage Estimator</h1>
+            <button id="darkModeToggle" class="btn">Toggle Dark Mode</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="performance">Performance</button>
+            <button class="tab-btn" data-tab="usage">Usage Trends</button>
+            <button class="tab-btn" data-tab="battery">Battery Health</button>
+            <button class="tab-btn" data-tab="recommendations">Recommendations</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>Performance Summary</h2>
+                <p>Your EV bike's comprehensive performance assessment</p>
+               
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Current Value</th>
+                            <th>Benchmark</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Range</strong></td>
+                            <td>85 km</td>
+                            <td>95 km</td>
+                            <td class="text-warning">Below Target</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Battery Health</strong></td>
+                            <td>92%</td>
+                            <td>-</td>
+                            <td class="text-success">Excellent</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Top Speed</strong></td>
+                            <td>45 km/h</td>
+                            <td>50 km/h</td>
+                            <td>Good</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Load Efficiency</strong></td>
+                            <td>88%</td>
+                            <td>-</td>
+                            <td class="text-success">Excellent</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 20px;">
+                    <h3>Recent insights</h3>
+                    <ul class="list-disc">
+                        <li>Your range has decreased by 8% in the last 3 months</li>
+                        <li>Battery efficiency peaks between 20-80% charge level</li>
+                        <li>Performance is optimal with loads under 100kg</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Performance Graph Overlay</h2>
+                <div class="chart-container">
+                    <canvas id="rangeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Tab -->
+        <div id="performance" class="tab-content">
+            <div class="card">
+                <h2>Detailed Specifications Analysis</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Specification</th>
+                            <th>Your Bike</th>
+                            <th>Model X</th>
+                            <th>Model Y</th>
+                            <th>Ideal Range</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Battery Capacity</strong></td>
+                            <td>48V 20Ah</td>
+                            <td>48V 25Ah</td>
+                            <td>52V 30Ah</td>
+                            <td>48V 22Ah+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Motor Power</strong></td>
+                            <td>750W</td>
+                            <td>800W</td>
+                            <td>1000W</td>
+                            <td>750-850W</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Max Range</strong></td>
+                            <td>85km</td>
+                            <td>95km</td>
+                            <td>120km</td>
+                            <td>90-100km</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Load Limit</strong></td>
+                            <td>150kg</td>
+                            <td>180kg</td>
+                            <td>200kg</td>
+                            <td>160kg</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="grid grid-cols-2" style="margin-top: 30px; gap: 20px;">
+                    <div class="chart-container">
+                        <canvas id="rangeComparisonChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="motorComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Trends Tab -->
+        <div id="usage" class="tab-content">
+            <div class="card">
+                <h2>Monthly Usage Analysis</h2>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="usageChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Efficiency Scatter Plot</h2>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="efficiencyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battery Health Tab -->
+        <div id="battery" class="tab-content">
+            <div class="card">
+                <h2>Battery Health Assessment</h2>
+                <h3>Capacity Retention Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="batteryHealthChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Charging Pattern Analysis</h3>
+                <div class="grid grid-cols-2" style="gap: 15px;">
+                    <div style="background-color: var(--card-bg); padding: 15px; border-radius: 8px;">
+                        <p><strong>Average charge cycles:</strong></p>
+                        <p style="font-size: 24px; margin: 5px 0;">12/week</p>
+                        <p style="color: var(--warning); font-size: 14px;">Recommended: 8-10/week</p>
+                    </div>
+                    <div style="background-color: var(--card-bg); padding: 15px; border-radius: 8px;">
+                        <p><strong>Charge type distribution:</strong></p>
+                        <p style="font-size: 24px; margin: 5px 0;">80% partial</p>
+                        <p style="font-size: 14px;">(20-80% range)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Tab -->
+        <div id="recommendations" class="tab-content">
+            <div class="card">
+                <h2>Personalized Recommendations</h2>
+               
+                <div style="margin-top: 20px;">
+                    <h3>1. Range Optimization</h3>
+                    <ul class="list-disc">
+                        <li>Reduce average speed by 5km/h to extend range by ~10%</li>
+                        <li>Consider battery upgrade for 15-20% range improvement</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3>2. Battery Preservation</h3>
+                    <ul class="list-disc">
+                        <li>Limit fast charging to 3x/week</li>
+                        <li>Maintain charge between 30-90% for longevity</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3>3. Performance Matching</h3>
+                    <ul class="list-disc">
+                        <li>Your usage pattern suggests Model Y would be 22% more efficient</li>
+                        <li>Current bike meets 85% of your requirements</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h3>4. Maintenance Alert</h3>
+                    <ul class="list-disc">
+                        <li>Tire pressure check needed (last checked 45 days ago)</li>
+                        <li>Motor inspection recommended in next 30 days</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h2>Download Reports</h2>
+                    <div class="grid grid-cols-2" style="gap: 15px;">
+                        <button class="btn" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Monthly Performance Report</span>
+                            <span>March 2025</span>
+                        </button>
+                        <button class="btn" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Battery Health Analysis</span>
+                            <span>Q1 2025</span>
+                        </button>
+                        <button class="btn" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Usage Pattern Report</span>
+                            <span>February 2025</span>
+                        </button>
+                        <button class="btn" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Comparative Analysis</span>
+                            <span>Top 3 Matching Models</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+           
+            // Update charts for dark mode
+            updateChartsForDarkMode();
+        });
+
+        // Tab Switching
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+               
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Initialize Charts
+        let rangeChart, rangeComparisonChart, motorComparisonChart, usageChart, efficiencyChart, batteryHealthChart;
+
+        function updateChartsForDarkMode() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const borderColor = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.1)';
+           
+            // Update all charts as needed
+            if (usageChart) {
+                usageChart.options.plugins.legend.labels.color = isDarkMode ? '#f8f9fa' : '#212529';
+                usageChart.update();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Range Chart
+            const rangeCtx = document.getElementById('rangeChart').getContext('2d');
+            rangeChart = new Chart(rangeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Your Bike Range',
+                            data: [90, 88, 86, 85, 84, 85],
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Model X Range',
+                            data: [95, 94, 95, 95, 94, 95],
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+
+            // Range Comparison Chart
+            const rangeCompCtx = document.getElementById('rangeComparisonChart').getContext('2d');
+            rangeComparisonChart = new Chart(rangeCompCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Your Bike', 'Model X', 'Model Y', 'Ideal Range'],
+                    datasets: [{
+                        label: 'Range (km)',
+                        data: [85, 95, 120, 95],
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.7)',
+                            'rgba(25, 135, 84, 0.7)',
+                            'rgba(111, 66, 193, 0.7)',
+                            'rgba(255, 193, 7, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(13, 110, 253, 1)',
+                            'rgba(25, 135, 84, 1)',
+                            'rgba(111, 66, 193, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Motor Comparison Chart
+            const motorCompCtx = document.getElementById('motorComparisonChart').getContext('2d');
+            motorComparisonChart = new Chart(motorCompCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Your Bike', 'Model X', 'Model Y', 'Ideal Range'],
+                    datasets: [{
+                        label: 'Motor Power (W)',
+                        data: [750, 800, 1000, 800],
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.7)',
+                            'rgba(25, 135, 84, 0.7)',
+                            'rgba(111, 66, 193, 0.7)',
+                            'rgba(255, 193, 7, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(13, 110, 253, 1)',
+                            'rgba(25, 135, 84, 1)',
+                            'rgba(111, 66, 193, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Usage Chart
+            const usageCtx = document.getElementById('usageChart').getContext('2d');
+            usageChart = new Chart(usageCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Urban commuting', 'Delivery work', 'Leisure rides', 'Hill climbing'],
+                    datasets: [{
+                        data: [45, 30, 15, 10],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0'
+                        ],
+                        borderColor: document.body.classList.contains('dark-mode') ?
+                            ['rgba(255, 255, 255, 0.8)'] : ['rgba(0, 0, 0, 0.1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: document.body.classList.contains('dark-mode') ? '#f8f9fa' : '#212529'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Efficiency Chart
+            const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+            efficiencyChart = new Chart(efficiencyCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Trip Efficiency',
+                        data: [
+                            {x: 10, y: 15},
+                            {x: 20, y: 25},
+                            {x: 30, y: 40},
+                            {x: 40, y: 60},
+                            {x: 50, y: 85}
+                        ],
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Distance: ${context.parsed.x}km, Consumption: ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Battery Consumption (%)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Trip Distance (km)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Battery Health Chart
+            const batteryCtx = document.getElementById('batteryHealthChart').getContext('2d');
+            batteryHealthChart = new Chart(batteryCtx, {
+                type: 'line',
+                data: {
+                    labels: ['New', '3 months', '6 months', 'Current'],
+                    datasets: [{
+                        label: 'Battery Health (%)',
+                        data: [100, 98, 95, 92],
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 90,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
