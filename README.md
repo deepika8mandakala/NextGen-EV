@@ -1,184 +1,244 @@
 # NextGen-EV
-Electric Vehicle Compatibility Analyzer &amp; Diagnostic Suite Designed ML models for predicting EV compatibility based on user preferences and diagnosing potential issues for predictive maintenance.
-# NextGen-EV: AI-Powered EV Analytics Platform
 
-## Objective
+NextGen-EV is a lightweight EV analytics system that helps riders and manufacturers estimate real-world electric vehicle range, charging time, and efficiency from practical vehicle and route inputs.
 
-The objective is to build an EV analytics platform that uses machine learning to assist users and manufacturers in:
+The project keeps the original static UI style, removes login friction, and adds a real machine learning backend powered by a trained Random Forest regression model.
 
-* Analyzing vehicle performance
-* Detecting faults
-* Performing predictive maintenance
-* Recommending suitable EVs
+## A. Project Overview
 
-## Why Electric Vehicles?
+NextGen-EV provides two direct-access modes:
 
-Electric Vehicles are the future of mobility, but they face challenges such as:
+- **User Mode**: riders can enter vehicle and trip conditions to get range, charging, and efficiency insights.
+- **Manufacturer Mode**: EV teams can compare design scenarios and understand how battery capacity, weight, speed, temperature, and terrain affect performance.
 
-* Fire incidents
-* Component failures
-* Limited support infrastructure
+No authentication is required. The app is designed for fast demos, recruiter review, and practical EV analytics.
 
-This platform aims to leverage AI and IoT to make EVs safer and more intelligent.
+## B. Problem
 
-## Key Features
+Electric vehicle users often face uncertainty around:
 
-* Manufacturing defect detection
-* Predictive maintenance using IoT sensor data
-* Anomaly detection
-* EV recommendation system
-* Multi-user support for both manufacturers and consumers
+- real-world range under different speed, temperature, and terrain conditions
+- inefficient charging planning
+- limited predictive insights before a ride
+- unclear tradeoffs between battery size, vehicle weight, and performance
 
-## Modules / Pages
+Manufacturers also need quick scenario tools to evaluate design choices without complex simulation software.
 
-* Index page
-* User / Manufacturer login
-* User dashboard (Profile, Diagnosis, Notifications)
-* Diagnosis tools
-* Review page
-* Backend ML model integration
+## C. Solution
 
-## Data & Preprocessing
+NextGen-EV solves this with:
 
-### Data Used
+- a machine learning range prediction API
+- direct User Mode and Manufacturer Mode dashboards
+- lightweight static frontend pages
+- practical output cards for range, charging time, and efficiency
+- scenario comparison for manufacturer-style design analysis
 
-The platform uses simulated or real IoT EV data, including:
+## D. Tech Stack
 
-* Temperature
-* Vibration
-* Voltage
-* Current
-* Battery health
+**Frontend:**
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Chart.js on existing analysis pages
 
-### Preprocessing Steps
+**Backend:**
+- Python
+- Flask
+- Flask-CORS
 
-* Handling of null values
-* Feature scaling using StandardScaler
-* Encoding categorical variables
-* Outlier removal
-* Optional feature selection
+**ML:**
+- scikit-learn
+- RandomForestRegressor
+- joblib model serialization
+- generated EV range dataset in CSV format
 
-### Missing Value Handling
+## E. Features
 
-Approaches include forward fill, mean imputation, or conditional removal based on feature importance.
+- Direct User Mode and Manufacturer Mode access
+- EV range prediction in kilometers
+- charging time estimation in hours
+- efficiency estimation in percent
+- practical recommendation text
+- manufacturer scenario comparison
+- existing model management, diagnosis, market intelligence, review analysis, and notification pages preserved
+- Firebase authentication removed
 
-## Machine Learning Models Used
+## F. Innovation
 
-* Random Forest for defect classification
-* Isolation Forest for anomaly detection
-* Logistic Regression for health prediction
-* LSTM / Autoencoders for time-series maintenance
+- Real ML model integration instead of random or dummy calculations
+- Lightweight architecture that stays easy to run locally
+- Practical EV inputs: battery capacity, vehicle weight, speed, temperature, terrain, charger power, and battery state of charge
+- Prediction outputs that use real units and sensible constraints
 
-### Model Rationale
+## G. Why This Project Stands Out
 
-* Random Forest is robust to noisy, non-linear data and avoids overfitting.
-* Isolation Forest efficiently detects outliers in an unsupervised setting.
+- Real-world EV relevance
+- Clean UX with no login barrier
+- Recruiter-friendly full-stack + ML architecture
+- Maintains the existing visual theme while improving usability
+- Simple enough to demo quickly, but realistic enough to discuss technically
 
-## Training & Validation
+## H. Flow Diagram
 
-### Data Split
+```text
+User / Manufacturer
+        |
+        v
+Frontend Input Form
+        |
+        v
+Flask /predict API
+        |
+        v
+Random Forest ML Model
+        |
+        v
+Range + Efficiency + Charging Time
+        |
+        v
+Result Cards + Recommendation
+```
 
-The data is split into 80% training and 20% testing using train\_test\_split.
+## I. Installation
 
-### Evaluation Metrics
+1. Clone the repository.
 
-* For classification: Accuracy, Precision, Recall, F1-score
-* For regression: RMSE, MAE
-* Binary models: Confusion Matrix, AUC-ROC
+```bash
+git clone https://github.com/deepika8mandakala/NextGen-EV.git
+cd NextGen-EV
+```
 
-### Validation Strategy
+2. Install Python dependencies.
 
-K-Fold Cross Validation ensures model generalization.
+```bash
+python -m pip install -r requirements.txt
+```
 
-## System Architecture & Backend Integration
+3. Train or regenerate the ML model.
 
-### ML Integration
+```bash
+python models/train_model.py
+```
 
-A Python backend (FastAPI or Flask) loads the trained ML models and exposes REST API endpoints.
+This creates:
 
-### Real-Time Data Handling
+- `data/ev_range_dataset.csv`
+- `models/ev_model.pkl`
 
-IoT sensor data is sent via API, and the backend processes the data to return predictions on faults or system health.
+4. Start the backend API.
 
-### Backend Libraries Used
-
-* scikit-learn
-* pandas
-* joblib
-* FastAPI or Flask
-* uvicorn or gunicorn
-
-## Predictive Maintenance
-
-Predictive maintenance uses historical and real-time data to estimate when a component might fail, allowing proactive intervention. Time-series models like LSTM or Random Forest Regressor are used depending on the data structure.
-
-## Anomaly Detection
-
-### Definition
-
-Anomalies refer to significant deviations in sensor readings, such as sudden voltage spikes or temperature rises, which may indicate a problem.
-
-### Techniques Used
-
-* Isolation Forest
-* One-Class SVM
-
-## EV Recommendation System
-
-EV recommendations are based on:
-
-* User location
-* Average travel range
-* Usage frequency
-* Preferences
-
-The system uses classification or recommender algorithms to suggest the most suitable EVs.
-
-## Frontend Interaction
-
-Users interact with the models through:
-
-* Manual form inputs
-* Real-time sensor integration
-
-The backend responds with diagnostic results such as "Battery needs service" or "Safe to drive."
-
-## Deployment Strategy
-
-* Host ML backend on cloud platforms like AWS or GCP
-* Integrate with real-time IoT data pipelines
-* Provide dashboards for both users and manufacturers
-
-## Error Handling
-
-All inputs are validated on both frontend (JavaScript) and backend (Python) before being passed to ML models.
-
-## Benefits
-
-The system provides early warnings and predictive alerts, helping reduce the risk of EV fires or major failures.
-
-## Future Improvements
-
-* Use real-world EV data
-* Integrate deep learning models like CNN for image diagnostics
-* Add mobile app compatibility
-* Incorporate live GPS tracking and vehicle monitoring
-
-## System Architecture Flowchart:
-![nextgen-ev](https://github.com/user-attachments/assets/31209e23-0690-4942-a156-86bb031526f1)
-[EV Platform Flowchart]
-
-
-
-## Repository URL
-
-[https://github.com/deepika8mandakala/NextGen-EV](https://github.com/deepika8mandakala/NextGen-EV)
-
----
-
-Developed by:
-Team [TECHNOVA]
-- Deepika Mandakala
-- Ruchira Nalluri
-- Divya Sai Veeravalli
-- Vyshnavi Manam
+```bash
+python backend/app.py
+```
+
+The API runs at:
+
+```text
+http://127.0.0.1:5000
+```
+
+5. Open the frontend.
+
+Open:
+
+```text
+frontend/index.html
+```
+
+Then choose:
+
+- User Mode
+- Manufacturer Mode
+- ML Range Prediction
+
+## API Example
+
+Endpoint:
+
+```text
+POST /predict
+```
+
+Sample request:
+
+```json
+{
+  "battery_capacity_kwh": 3.7,
+  "vehicle_weight_kg": 115,
+  "speed_kmph": 55,
+  "temperature_c": 28,
+  "terrain": "mixed",
+  "charger_kw": 1.0,
+  "battery_soc_percent": 80
+}
+```
+
+Sample response:
+
+```json
+{
+  "predicted_range_km": 139.2,
+  "efficiency_percent": 89.6,
+  "charging_time_hours": 0.83,
+  "recommendation": "Strong setup for this use case. Keep tyre pressure and charge cycles consistent to preserve the predicted range."
+}
+```
+
+## J. Future Work
+
+- real-time vehicle telemetry
+- IoT sensor integration
+- battery health prediction
+- route-aware range prediction
+- live weather integration
+- deployment of backend API to a cloud service
+
+## K. Demo Section
+
+Add screenshots here:
+
+```text
+static/demo/home.png
+static/demo/user-mode.png
+static/demo/manufacturer-mode.png
+static/demo/prediction-results.png
+```
+
+## Updated Structure
+
+```text
+NextGen-EV/
+  backend/
+    app.py
+  data/
+    ev_range_dataset.csv
+  frontend/
+    index.html
+    user-dashboard.html
+    dashboard.html
+    model.html
+    vehicle-diagnosis.html
+    model-management.html
+    review-analysis.html
+    market-intelligence.html
+    smart-alerts.html
+    ...
+  models/
+    train_model.py
+    ev_model.pkl
+  static/
+    images/
+      biker.png
+      photo.jpg
+      ...
+  README.md
+  requirements.txt
+```
+
+## Removed Authentication Files
+
+- `frontend/user-login.html`
+- `frontend/user-login1.html`
+
+Firebase SDK usage and login/register flows were removed to simplify UX and avoid exposing auth configuration in a static frontend.

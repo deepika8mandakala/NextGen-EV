@@ -133,21 +133,26 @@
         .logo-brand {
             display: flex;
             align-items: center;
-            gap: 5px; /* Reduced gap between logo and text */
+            gap: 10px;
+            font-weight: bold;
         }
-        
-        
+
+        .logo-circle {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo-brand">
-            <div class="logo">
-                <img src="biker.png" alt="EV Connect Logo">
-                  
-            </div>
-             <div class="brand-name"><b>NEXTGEN-EV</b></div>
+            <img src="../static/images/biker.png" alt="NextGen-EV logo" class="logo-circle">
+            <div>NEXTGEN-EV</div>
         </div>
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
@@ -176,7 +181,7 @@
             </div>
             
             <!-- Battery Health Check -->
-            <div class="diagnosis-card" onclick="location.href='smartalerts.html'">
+            <div class="diagnosis-card" onclick="location.href='smart-alerts.html'">
                 <div class="card-icon"></div>
                 <h2>Smart Alert System</h2>
                 <p>Comprehensive analysis of your EV battery condition</p>
@@ -193,6 +198,5 @@
         <a href="user-dashboard.html" class="back-button">Back to Dashboard</a>
     </div>
 
-    <script src="js/script.js"></script>
 </body>
 </html>

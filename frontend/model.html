@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen-EV Range Predictor</title>
+    <style>
+        :root {
+            --primary: #1A73E8;
+            --primary-dark: #0d5bcc;
+            --text: #202124;
+            --muted: #5f6368;
+            --line: #dfe5f2;
+            --soft: #eef5ff;
+            --success: #188038;
+            --warning: #f29900;
+            --danger: #d93025;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background-color: var(--primary);
+            color: white;
+            min-height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 28px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .brand img {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 28px 20px 44px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 22px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: clamp(1.9rem, 4vw, 2.7rem);
+            color: #1f2937;
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 720px;
+            line-height: 1.6;
+        }
+
+        .mode-pill {
+            border: 1px solid var(--line);
+            background: white;
+            border-radius: 999px;
+            padding: 8px 14px;
+            color: var(--primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(280px, 420px) 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            padding: 22px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.88rem;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        input, select {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 11px 12px;
+            font-size: 1rem;
+            background: white;
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.14);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 6px;
+            padding: 11px 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .secondary-btn {
+            background: var(--soft);
+            color: var(--primary);
+        }
+
+        .status {
+            min-height: 24px;
+            margin-top: 14px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .status.error {
+            color: var(--danger);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .result-card {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+            background: #fbfdff;
+        }
+
+        .result-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.86rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-card strong {
+            color: var(--primary);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+        }
+
+        .insight {
+            border-left: 4px solid var(--primary);
+            background: var(--soft);
+            border-radius: 6px;
+            padding: 14px 16px;
+            line-height: 1.55;
+            margin: 0 0 18px;
+        }
+
+        .scenario-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+        }
+
+        th {
+            background: #f3f6fb;
+            color: #334155;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .form-grid, .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">
+            <img src="../static/images/biker.png" alt="NextGen-EV logo">
+            <span>NEXTGEN-EV</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="user-dashboard.html">User Mode</a>
+            <a href="dashboard.html">Manufacturer Mode</a>
+        </div>
+    </nav>
+
+    <main class="page">
+        <section class="header">
+            <div>
+                <h1>ML Range & Efficiency Predictor</h1>
+                <p>Enter realistic EV design and ride conditions. The Flask API loads a trained Random Forest regression model and returns range, efficiency, charging time, and practical guidance.</p>
+            </div>
+            <div class="mode-pill" id="mode-label">User Mode</div>
+        </section>
+
+        <section class="workspace">
+            <form class="panel" id="prediction-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="battery_capacity_kwh">Battery capacity (kWh)</label>
+                        <input id="battery_capacity_kwh" name="battery_capacity_kwh" type="number" min="1" max="120" step="0.1" value="3.7" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicle_weight_kg">Vehicle weight (kg)</label>
+                        <input id="vehicle_weight_kg" name="vehicle_weight_kg" type="number" min="60" max="2600" step="1" value="115" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="speed_kmph">Average speed (km/h)</label>
+                        <input id="speed_kmph" name="speed_kmph" type="number" min="15" max="130" step="1" value="55" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperature_c">Temperature (C)</label>
+                        <input id="temperature_c" name="temperature_c" type="number" min="-10" max="50" step="1" value="28" required>
+                    </div>
+                    <div class="form-group full">
+                        <label for="terrain">Terrain</label>
+                        <select id="terrain" name="terrain">
+                            <option value="city">City / stop-go</option>
+                            <option value="highway">Highway</option>
+                            <option value="hilly">Hilly</option>
+                            <option value="mixed" selected>Mixed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="charger_kw">Charger power (kW)</label>
+                        <input id="charger_kw" name="charger_kw" type="number" min="0.5" max="80" step="0.1" value="1.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="battery_soc_percent">Current battery (%)</label>
+                        <input id="battery_soc_percent" name="battery_soc_percent" type="number" min="5" max="100" step="1" value="80" required>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="primary-btn" type="submit">Predict Range</button>
+                    <button class="secondary-btn" type="button" id="scenario-btn">Compare Scenarios</button>
+                </div>
+                <div class="status" id="status">Backend expected at http://127.0.0.1:5000/predict</div>
+            </form>
+
+            <section class="panel">
+                <div class="results-grid">
+                    <div class="result-card">
+                        <span>Predicted Range</span>
+                        <strong id="range-value">-- km</strong>
+                    </div>
+                    <div class="result-card">
+                        <span>Efficiency</span>
+                        <strong id="efficiency-value">--%</strong>
+                    </div>
+                    <div class="result-card">
+                        <span>Charge Time</span>
+                        <strong id="charge-value">-- h</strong>
+                    </div>
+                </div>
+                <p class="insight" id="insight">Submit vehicle inputs to view ML-based predictions and guidance.</p>
+                <table class="scenario-table hidden" id="scenario-table">
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Range</th>
+                            <th>Efficiency</th>
+                            <th>Guidance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scenario-body"></tbody>
+                </table>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000/predict";
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get("mode") === "manufacturer" ? "Manufacturer Mode" : "User Mode";
+        document.getElementById("mode-label").textContent = mode;
+
+        const form = document.getElementById("prediction-form");
+        const statusEl = document.getElementById("status");
+        const scenarioTable = document.getElementById("scenario-table");
+        const scenarioBody = document.getElementById("scenario-body");
+
+        function formPayload(overrides = {}) {
+            const data = Object.fromEntries(new FormData(form).entries());
+            const payload = {
+                battery_capacity_kwh: Number(data.battery_capacity_kwh),
+                vehicle_weight_kg: Number(data.vehicle_weight_kg),
+                speed_kmph: Number(data.speed_kmph),
+                temperature_c: Number(data.temperature_c),
+                terrain: data.terrain,
+                charger_kw: Number(data.charger_kw),
+                battery_soc_percent: Number(data.battery_soc_percent)
+            };
+            return { ...payload, ...overrides };
+        }
+
+        function setStatus(message, isError = false) {
+            statusEl.textContent = message;
+            statusEl.classList.toggle("error", isError);
+        }
+
+        function renderPrediction(data) {
+            document.getElementById("range-value").textContent = `${data.predicted_range_km} km`;
+            document.getElementById("efficiency-value").textContent = `${data.efficiency_percent}%`;
+            document.getElementById("charge-value").textContent = `${data.charging_time_hours} h`;
+            document.getElementById("insight").textContent = data.recommendation;
+        }
+
+        async function predict(payload) {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Prediction failed");
+            }
+            return data;
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            scenarioTable.classList.add("hidden");
+            setStatus("Running ML prediction...");
+            try {
+                const data = await predict(formPayload());
+                renderPrediction(data);
+                setStatus("Prediction complete.");
+            } catch (error) {
+                setStatus(`${error.message}. Start the backend with: python backend/app.py`, true);
+            }
+        });
+
+        document.getElementById("scenario-btn").addEventListener("click", async () => {
+            const base = formPayload();
+            const scenarios = [
+                ["Current", {}],
+                ["Eco speed", { speed_kmph: Math.max(25, base.speed_kmph - 10) }],
+                ["Hot day", { temperature_c: 40 }],
+                ["Hilly route", { terrain: "hilly" }]
+            ];
+
+            setStatus("Comparing scenarios...");
+            scenarioBody.innerHTML = "";
+            try {
+                for (const [label, override] of scenarios) {
+                    const result = await predict({ ...base, ...override });
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${label}</td>
+                        <td>${result.predicted_range_km} km</td>
+                        <td>${result.efficiency_percent}%</td>
+                        <td>${result.recommendation}</td>
+                    `;
+                    scenarioBody.appendChild(row);
+                }
+                scenarioTable.classList.remove("hidden");
+                setStatus("Scenario comparison complete.");
+            } catch (error) {
+                setStatus(`${error.message}. Start the backend with: python backend/app.py`, true);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -166,12 +166,17 @@
         .logo-brand {
             display: flex;
             align-items: center;
-            gap: 5px; /* Reduced gap between logo and text */
+            gap: 10px;
+            font-weight: bold;
         }
-        
-        .logo img {
-            height: 90px; /* Adjusted logo size */
-            width: 90px; /* Made logo smaller */
+
+        .logo-circle {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .brand-name {
             font-size: 1.rem;
@@ -186,12 +191,9 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo-brand">
-            <div class="logo">
-                <img src="biker.png" alt="EV Connect Logo">
-                  
-            </div>
-             <div><b>NEXTGEN-EV</b></div>
-        </div>  
+            <img src="../static/images/biker.png" alt="NextGen-EV logo" class="logo-circle">
+            <div>NEXTGEN-EV</div>
+        </div>
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="user-dashboard.html">Dashboard</a></li>
