@@ -215,7 +215,7 @@ NextGen-EV/
     ev_range_dataset.csv
   frontend/
     index.html
-    user-dashboard.html
+    vehicle-diagnosis.html
     dashboard.html
     model.html
     vehicle-diagnosis.html
